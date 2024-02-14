@@ -90,10 +90,29 @@ def get_answer(thread_id, message_id):
     #             stay_in_loop = False
     #
         # st.markdown(full_response)
-    # st.markdown('응답')
+    st.markdown('응답')
     st.session_state[thread_id].append(
         {"role": "assistant", "content": '응답'}
     )
+
+
+def load_chat_history(thread_id):
+    genie_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4ODk2MDE5OCwianRpIjoiZTBhNzkyYWEtN2EwNC00ZDJiLTkyNjMtMDk2MmEzNTMzNGRhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFwcHNtaXRoIiwibmJmIjoxNjg4OTYwMTk4LCJzY29wZSI6IkFETUlOIn0.MncQ5BGfCAo5W0h-pYiD7bNtgphk0bQWNi_KRLDPoo0"
+    header = {
+        'Authorization': genie_token,
+    }
+
+    parameter = {"thread_id": thread_id}
+    url = f'{base_url}/messages/history/{thread_id}'
+    data = requests.get(url, headers=header, params=parameter)
+    pp(data.json())
+    # print(data)
+    # answers = data.json()['data']['messages']
+
+
+
+if __name__ == "__main__":
+    load_chat_history('5dd2a96c-f846-49a0-854d-8d4e0cbe8f93')
 
 
 

@@ -5,7 +5,6 @@ from streamlit_option_menu import option_menu
 
 from functions.functions import add_item
 from services.api_services import login_with_linkus, ask, get_thread_id_list, get_answer
-import uuid
 
 
 def run():
@@ -48,51 +47,52 @@ def run():
         if "thread_id_list" not in st.session_state:
             st.session_state["thread_id_list"] = []
             get_thread_id_list()
+            for thread_id in st.session_state["thread_id_list"]:
+                pass
 
+
+        #login창 지우기용도
         with placeholder:
-            #sidebar를 그리는 라인. sidebar는 채팅방 목록을 보여주는 역할을 한다. 채팅방 목록은 thread_id_list를 통해 관리한다.
-            #thread_id_list는 채팅방을 추가할때마다 새로운 thread_id를 추가하고, 이를 통해 채팅방 목록을 관리한다.
-            #thread_id_list에 값이 하나도 없을때는 sidebar를 그리는 과정에서 out of index error가 발생하므로 이를 방지하기 위해
-            #thread_id_dict가 0보다 큰 경우에만 sidebar를 그리도록 한다.
-            with st.sidebar:
-                st.image('assets/new_logo.svg', width=200)
-                st.session_state["selected_app"] = st.selectbox('app 선택', ['app1', 'app2', 'app3'])
-                print('selected_app : ', st.session_state["selected_app"])
-                button = st.button(""
-                                   "\+ 새로운 채팅", on_click=add_item, key='add_item_button')
-                default_index = len(st.session_state["thread_id_list"]) - 1
-
-                if len( st.session_state["thread_id_list"]) > 0:
-                    current_thread = option_menu("", st.session_state["thread_id_list"],
-                                              key="unique_key_for_option_menu",
-                                              icons=['house', 'camera fill', 'kanban', 'book', 'person lines fill'],
-                                              menu_icon='kanban', default_index=default_index,
-                                              manual_select=default_index,
-                                              )
-                    st.session_state['current_thread'] = current_thread
-                    print('current_thread : ', st.session_state['current_thread'])
-
-            #채팅창 출력라인이다.
             st.empty()
-            if st.session_state['current_thread'] not in st.session_state:
-                st.session_state[st.session_state['current_thread']] = []
 
-            for message in st.session_state[st.session_state['current_thread']]:
-                with st.chat_message(message["role"]):
-                    st.markdown(message["content"])
+        with st.sidebar:
+            st.image('assets/new_logo.svg', width=200)
+            st.session_state["selected_app"] = st.selectbox('app 선택', ['app1', 'app2', 'app3'])
+            button = st.button(""
+                               "\+ 새로운 채팅", on_click=add_item, key='add_item_button')
+            default_index = len(st.session_state["thread_id_list"]) - 1
+
+            if len(st.session_state["thread_id_list"]) > 0:
+                current_thread = option_menu("", st.session_state["thread_id_list"],
+                                          key="unique_key_for_option_menu",
+                                          icons=['house', 'camera fill', 'kanban', 'book', 'person lines fill'],
+                                          menu_icon='kanban', default_index=default_index,
+                                          manual_select=default_index,
+                                          )
+                st.session_state['current_thread'] = current_thread
+                print('current_thread : ', st.session_state['current_thread'])
+
+        #채팅창 출력라인이다.
+
+        st.session_state
+        if st.session_state['current_thread'] not in st.session_state:
+            st.session_state[st.session_state['current_thread']] = []
+
+        for message in st.session_state[st.session_state['current_thread']]:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
 
-            if prompt := st.chat_input("AI 어시스턴트 오이지니에게 물어보세요."):
-                st.session_state[st.session_state['current_thread']].append(
-                    {"role": "user", "content": prompt})
-                with st.chat_message("user"):
-                    # st.markdown(prompt)
-                    response = ask(prompt, st.session_state['current_thread'])
-                    message_id = response['data']['message_id']
-                with st.chat_message("assistant"):
-                    message_placeholder = st.empty()
-                    get_answer(st.session_state['current_thread'], message_id)
-                    # st.markdown('답변입니다')
+        if prompt := st.chat_input("AI 어시스턴트 오이지니에게 물어보세요."):
+            st.session_state[st.session_state['current_thread']].append(
+                {"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+                response = ask(prompt, st.session_state['current_thread'])
+                message_id = response['data']['message_id']
+            with st.chat_message("assistant"):
+                get_answer(st.session_state['current_thread'], message_id)
+                # st.markdown('답변입니다')
 
 
 if __name__ == "__main__":
