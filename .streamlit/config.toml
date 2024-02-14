@@ -1,0 +1,5 @@
+#streamlit의 기본 설정을 저장하는 파일이다
+
+[theme]
+#테마를 어둡게 한다
+base="dark"
