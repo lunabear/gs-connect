@@ -1,7 +1,7 @@
 from services.api_services import get_app_list
 
 
-def test_get_app_list():
+def test_get_app_list_has_essential_keys():
     sut = get_app_list
     app_list = sut()
 
