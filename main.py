@@ -1,27 +1,22 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from functions.functions import add_item, set_app_id_via_selected_app_name,  \
-    set_thread_id_list_to_session_state
-from services.api_services import login_with_linkus, ask, get_thread_id_list, get_answer, get_app_list
+from functions.functions import add_thread, set_app_id_via_selected_app_name, \
+    set_thread_id_list_to_session_state, set_chat_history_via_thread_id
+from services.api_services import login_with_linkus, ask, get_app_list
 
 
 def run():
     st.set_page_config(page_title='52genie', menu_items=None,
                        page_icon='assets/logo_favicon.svg')
     print('main_page.py run()')
-    #session state에서 사용하는 값들을 초기화 하기 위한 코드.
-    #streamlit은 action이 발생하면 코드를 처음부터 끝까지 다시 실행하므로 아래같은 초기화 코드가 필요하다.
-    #session state에 is login이 없으면 False로 초기화
+
     if 'is_login' not in st.session_state:
         st.session_state['is_login'] = False
 
     if "selected_app_name" not in st.session_state:
         st.session_state["selected_app_name"] = None
         st.session_state["selected_app_id"] = None
-
-    #placeholder는 로그인 여부에 따라 다른 화면을 보여주기 위한 컨테이너
-    #placeholder 없이 화면을 그릴경우 로그인 여부에 따라 화면이 바뀌지 않는다. 로그인이 성공해도 아이디, 비밀번호, 로그인 버튼이 그대로 남아있게 된다.
 
     placeholder = st.empty()
     if not st.session_state['is_login']:
@@ -30,26 +25,23 @@ def run():
             with cent_co:
                 st.image('assets/52g_logo.png', width=200)
                 st.title("Login")
-                email = st.text_input('Email', value='bob@gs.co.kr')
-                pw = st.text_input('Password', value='Lunabear910!', type='password')
+                email = st.text_input('Email', )
+                pw = st.text_input('Password', type='password')
 
                 with st.form("my_form"):
                     submitted = st.form_submit_button("Submit")
                     if submitted:
-                        #login with linkus의 응답이 false면 로그인 실패 alert를 띄운다.
                         if not login_with_linkus(email, pw):
-                            st.error('로그인 실패')
+                            st.error('등록되지 않은 사용자입니다')
 
     if st.session_state['is_login']:
-        #login에 성공하면 내 아이디에 해당하는 thread_list를 가져온다.
-        #화면이 새로 불릴때마다 thread들을 새로 불러오는 이슈가 있어서 이를 방지하기 위해 thread_id_list 초기화는 로그인 직후에 실행한다.
-        #thread_id_list를 가져오는 시점은 로그인 성공시에만 실행되도록 한다.
         if "thread_id_list" not in st.session_state:
             st.session_state["thread_id_list"] = []
-            # get_thread_id_list()
             set_thread_id_list_to_session_state()
             for thread_id in st.session_state["thread_id_list"]:
-                pass
+                if thread_id not in st.session_state:
+                    st.session_state[thread_id] = []
+                set_chat_history_via_thread_id(thread_id)
 
         if 'app_list' not in st.session_state:
             st.session_state['app_list'] = []
@@ -58,7 +50,6 @@ def run():
             for app in _app_list:
                 st.session_state['app_list'].append(app)
 
-        #login창 지우기용도
         with placeholder:
             st.empty()
 
@@ -67,9 +58,7 @@ def run():
             st.session_state["selected_app_name"] = st.selectbox('app 선택', [app['app_name']
                                                                             for app in st.session_state['app_list']])
             st.session_state["selected_app_id"] = set_app_id_via_selected_app_name()
-
-            button = st.button(""
-                               "\+ 새로운 채팅", on_click=add_item, key='add_item_button')
+            st.button("\+ 새로운 채팅", on_click=add_thread, key='add_thread_button')
             default_index = len(st.session_state["thread_id_list"]) - 1
 
             if len(st.session_state["thread_id_list"]) > 0:
@@ -78,12 +67,9 @@ def run():
                                           icons=['house', 'camera fill', 'kanban', 'book', 'person lines fill'],
                                           menu_icon='kanban', default_index=default_index,
                                           manual_select=default_index,
-                                          )
+                                  )
                 st.session_state['current_thread'] = current_thread
-                print('current_thread : ', st.session_state['current_thread'])
 
-        # 채팅창 출력라인이다.
-        st.session_state
         if st.session_state['current_thread'] not in st.session_state:
             st.session_state[st.session_state['current_thread']] = []
 
@@ -99,12 +85,10 @@ def run():
                 st.markdown(prompt)
                 st.session_state["app_id"] = st.session_state['app_map_dict'][st.session_state["selected_app_name"]]
                 response = ask(prompt, st.session_state['current_thread'], st.session_state["app_id"])
-                message_id = response['data']['message_id']
-                print(message_id)
-                print(st.session_state['current_thread'])
             with st.chat_message("assistant"):
-                get_answer(st.session_state['current_thread'], message_id, st.session_state['selected_app_name'])
-                # st.markdown('답변입니다')
+                st.markdown(response)
+                st.session_state[st.session_state['current_thread']].append(
+                    {"role": "assistant", "content": response})
 
 
 if __name__ == "__main__":
