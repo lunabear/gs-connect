@@ -1,7 +1,8 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from functions.functions import add_item, set_app_id_via_selected_app_name
+from functions.functions import add_item, set_app_id_via_selected_app_name,  \
+    set_thread_id_list_to_session_state
 from services.api_services import login_with_linkus, ask, get_thread_id_list, get_answer, get_app_list
 
 
@@ -45,7 +46,8 @@ def run():
         #thread_id_list를 가져오는 시점은 로그인 성공시에만 실행되도록 한다.
         if "thread_id_list" not in st.session_state:
             st.session_state["thread_id_list"] = []
-            get_thread_id_list()
+            # get_thread_id_list()
+            set_thread_id_list_to_session_state()
             for thread_id in st.session_state["thread_id_list"]:
                 pass
 

@@ -44,8 +44,7 @@ def get_thread_id_list():
     url = 'https://hsxyp0kgk2.execute-api.ap-northeast-2.amazonaws.com/dev/threads'
     data = requests.get(url, headers=header, params=parameter)
     json_data = data.json()
-    for thread in json_data['data']['threads']:
-        st.session_state["thread_id_list"].append(thread['thread_id'])
+    return json_data
 
 
 def ask(prompt, thread_id, app_id):
