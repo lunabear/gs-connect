@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from functions.functions import add_item
+from functions.functions import add_item, set_app_id_via_selected_app_name
 from services.api_services import login_with_linkus, ask, get_thread_id_list, get_answer, get_app_list
 
 
@@ -62,6 +62,7 @@ def run():
             st.image('assets/new_logo.svg', width=200)
             st.session_state["selected_app_name"] = st.selectbox('app 선택', [app['app_name']
                                                                             for app in st.session_state['app_list']])
+            st.session_state["selected_app_id"] = set_app_id_via_selected_app_name()
 
             button = st.button(""
                                "\+ 새로운 채팅", on_click=add_item, key='add_item_button')
@@ -77,8 +78,7 @@ def run():
                 st.session_state['current_thread'] = current_thread
                 print('current_thread : ', st.session_state['current_thread'])
 
-        #채팅창 출력라인이다.
-
+        # 채팅창 출력라인이다.
         st.session_state
         if st.session_state['current_thread'] not in st.session_state:
             st.session_state[st.session_state['current_thread']] = []
@@ -86,7 +86,6 @@ def run():
         for message in st.session_state[st.session_state['current_thread']]:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
-
 
         if prompt := st.chat_input("AI 어시스턴트 오이지니에게 물어보세요."):
             st.session_state[st.session_state['current_thread']].append(

@@ -16,3 +16,8 @@ def add_item():
     # if thread_id + 'first_recommendation' not in st.session_state:
     #     st.session_state[thread_id + 'is_first_recommendation'] = True
 
+
+def set_app_id_via_selected_app_name():
+    for app in st.session_state['app_list']:
+        if app['app_name'] == st.session_state["selected_app_name"]:
+            return app['app_id']
