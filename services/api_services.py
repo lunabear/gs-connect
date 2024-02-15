@@ -48,51 +48,50 @@ def get_thread_id_list():
         st.session_state["thread_id_list"].append(thread['thread_id'])
 
 
-def ask(prompt, thread_id):
+def ask(prompt, thread_id, app_id):
     header = {
         'Authorization': st.secrets["52genie_token"],
     }
     parameter = {
-        "message_from": "HUMAN",
-        "messages": [
-            {"type": "text", "text": prompt}
-        ],
-        "is_test": True,
-    }
-    url = f'{base_url}/messages/query/{thread_id}'
+                    "app_id": app_id,
+                    "thread_id": thread_id,
+                    "query": prompt
+                }
+
+    url = f'{base_url}/apps/query/'
     data = requests.post(url, headers=header, json=parameter)
     return data.json()
 
 
-def get_answer(thread_id, message_id):
-    # full_response = ""
-    # header = {
-    #     'Authorization': st.secrets["52genie_token"],
-    #     'accept': 'application/json'
-    # }
-    # parameter = {
-    #     "thread_id": thread_id,
-    #     "message_id": message_id,
-    # }
-    # url = f'https://hsxyp0kgk2.execute-api.ap-northeast-2.amazonaws.com/dev/answers/{thread_id}/{message_id}'
-    # stay_in_loop = True
-    # with st.spinner("잠시만 기다려주세요..."):
-    #     while stay_in_loop:
-    #         data = requests.get(url, headers=header, params=parameter)
-    #         result = data.json()
-    #         answer = result['data']['messages'][0]['answer']
-    #
-    #         if answer is None:
-    #             time.sleep(3)
-    #         else:
-    #             full_response += result['data']['messages'][0]['answer']
-    #             prompt_recommendation_list = result['data']['messages'][0]['prompt_recommendation_list']
-    #             stay_in_loop = False
-    #
-        # st.markdown(full_response)
-    st.markdown('응답')
+def get_answer(thread_id, message_id,app_name):
+    full_response = f"({app_name}) "
+    header = {
+        'Authorization': st.secrets["52genie_token"],
+        'accept': 'application/json'
+    }
+    parameter = {
+        "thread_id": thread_id,
+        "message_id": message_id,
+    }
+    url = f'{base_url}/messages/history/{thread_id}'
+    stay_in_loop = True
+    with st.spinner("잠시만 기다려주세요..."):
+        while stay_in_loop:
+            data = requests.get(url, headers=header, params=parameter)
+            result = data.json()
+            answer = result['data']['message_list'][-1]['messages'][0]['text']
+
+            if answer is None:
+                time.sleep(3)
+            else:
+                full_response += result['data']['message_list'][-1]['messages'][0]['text']
+                # prompt_recommendation_list = result['data']['messages'][0]['prompt_recommendation_list']
+                stay_in_loop = False
+
+        st.markdown(full_response)
+    # st.markdown('응답')
     st.session_state[thread_id].append(
-        {"role": "assistant", "content": '응답'}
+        {"role": "assistant", "content": full_response}
     )
 
 
@@ -117,9 +116,12 @@ def get_app_list():
 
     response = requests.get(url, headers=header)
     app_list = list()
+    app_map_dict = {}
     for app in response.json()['data']:
         app_list.append({'app_id': app['app_id'], 'app_name': app['name']})
-    return app_list
+        app_map_dict[app['name']] = app['app_id']
+
+    return app_list, app_map_dict
 
 
 if __name__ == "__main__":

@@ -51,7 +51,9 @@ def run():
 
         if 'app_list' not in st.session_state:
             st.session_state['app_list'] = []
-            for app in get_app_list():
+            _app_list, app_map_dict = get_app_list()
+            st.session_state['app_map_dict'] = app_map_dict
+            for app in _app_list:
                 st.session_state['app_list'].append(app)
 
         #login창 지우기용도
@@ -87,15 +89,19 @@ def run():
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
-        if prompt := st.chat_input("AI 어시스턴트 오이지니에게 물어보세요."):
+
+        if prompt := st.chat_input(f"{st.session_state['selected_app_name']}에게 물어보세요."):
             st.session_state[st.session_state['current_thread']].append(
                 {"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(prompt)
-                response = ask(prompt, st.session_state['current_thread'])
+                st.session_state["app_id"] = st.session_state['app_map_dict'][st.session_state["selected_app_name"]]
+                response = ask(prompt, st.session_state['current_thread'], st.session_state["app_id"])
                 message_id = response['data']['message_id']
+                print(message_id)
+                print(st.session_state['current_thread'])
             with st.chat_message("assistant"):
-                get_answer(st.session_state['current_thread'], message_id)
+                get_answer(st.session_state['current_thread'], message_id, st.session_state['selected_app_name'])
                 # st.markdown('답변입니다')
 
 
