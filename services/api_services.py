@@ -6,7 +6,7 @@ import time
 from pprint import pp
 
 base_url = 'https://hsxyp0kgk2.execute-api.ap-northeast-2.amazonaws.com/dev'
-
+genie_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4ODk2MDE5OCwianRpIjoiZTBhNzkyYWEtN2EwNC00ZDJiLTkyNjMtMDk2MmEzNTMzNGRhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFwcHNtaXRoIiwibmJmIjoxNjg4OTYwMTk4LCJzY29wZSI6IkFETUlOIn0.MncQ5BGfCAo5W0h-pYiD7bNtgphk0bQWNi_KRLDPoo0"
 
 """
 로그인을 시도하는 함수로 
@@ -97,7 +97,6 @@ def get_answer(thread_id, message_id):
 
 
 def load_chat_history(thread_id):
-    genie_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4ODk2MDE5OCwianRpIjoiZTBhNzkyYWEtN2EwNC00ZDJiLTkyNjMtMDk2MmEzNTMzNGRhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFwcHNtaXRoIiwibmJmIjoxNjg4OTYwMTk4LCJzY29wZSI6IkFETUlOIn0.MncQ5BGfCAo5W0h-pYiD7bNtgphk0bQWNi_KRLDPoo0"
     header = {
         'Authorization': genie_token,
     }
@@ -109,6 +108,18 @@ def load_chat_history(thread_id):
     # print(data)
     # answers = data.json()['data']['messages']
 
+
+def get_app_list():
+    url = f'{base_url}/apps'
+    header = {
+        'Authorization': genie_token,
+    }
+
+    response = requests.get(url, headers=header)
+    app_list = list()
+    for app in response.json()['data']:
+        app_list.append({'app_id': app['app_id'], 'app_name': app['name']})
+    return app_list
 
 
 if __name__ == "__main__":

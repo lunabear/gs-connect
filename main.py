@@ -1,10 +1,8 @@
-from pprint import pp
-
 import streamlit as st
 from streamlit_option_menu import option_menu
 
 from functions.functions import add_item
-from services.api_services import login_with_linkus, ask, get_thread_id_list, get_answer
+from services.api_services import login_with_linkus, ask, get_thread_id_list, get_answer, get_app_list
 
 
 def run():
@@ -17,8 +15,9 @@ def run():
     if 'is_login' not in st.session_state:
         st.session_state['is_login'] = False
 
-    if "selected_app" not in st.session_state:
-        st.session_state["selected_app"] = None
+    if "selected_app_name" not in st.session_state:
+        st.session_state["selected_app_name"] = None
+        st.session_state["selected_app_id"] = None
 
     #placeholder는 로그인 여부에 따라 다른 화면을 보여주기 위한 컨테이너
     #placeholder 없이 화면을 그릴경우 로그인 여부에 따라 화면이 바뀌지 않는다. 로그인이 성공해도 아이디, 비밀번호, 로그인 버튼이 그대로 남아있게 된다.
@@ -50,6 +49,10 @@ def run():
             for thread_id in st.session_state["thread_id_list"]:
                 pass
 
+        if 'app_list' not in st.session_state:
+            st.session_state['app_list'] = []
+            for app in get_app_list():
+                st.session_state['app_list'].append(app)
 
         #login창 지우기용도
         with placeholder:
@@ -57,7 +60,9 @@ def run():
 
         with st.sidebar:
             st.image('assets/new_logo.svg', width=200)
-            st.session_state["selected_app"] = st.selectbox('app 선택', ['app1', 'app2', 'app3'])
+            st.session_state["selected_app_name"] = st.selectbox('app 선택', [app['app_name']
+                                                                            for app in st.session_state['app_list']])
+
             button = st.button(""
                                "\+ 새로운 채팅", on_click=add_item, key='add_item_button')
             default_index = len(st.session_state["thread_id_list"]) - 1
