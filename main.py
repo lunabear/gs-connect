@@ -21,6 +21,9 @@ def run():
     if 'token' not in st.session_state:
         st.session_state['token'] = ''
 
+    if 'current_thread' not in st.session_state:
+        st.session_state['current_thread'] = ''
+
     placeholder = st.empty()
     if not st.session_state['is_login']:
         with placeholder.container():
