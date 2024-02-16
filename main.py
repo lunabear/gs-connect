@@ -23,7 +23,7 @@ def run():
         with placeholder.container():
             left_co, cent_co, last_co = st.columns(3)
             with cent_co:
-                st.image('assets/52g_logo.png', width=200)
+                st.image('assets/algo_52g_logo.svg', width=200)
                 st.title("Login")
                 email = st.text_input('Email', value='bob@gs.co.kr')
                 pw = st.text_input('Password', value='Lunabear910!', type='password')
@@ -37,7 +37,7 @@ def run():
     if st.session_state['is_login']:
         if "thread_id_list" not in st.session_state:
             st.session_state["thread_id_list"] = []
-            add_thread()
+            # add_thread()
             set_thread_id_list_to_session_state()
             for thread_id in st.session_state["thread_id_list"]:
                 if thread_id not in st.session_state:
@@ -55,7 +55,7 @@ def run():
             st.empty()
 
         with st.sidebar:
-            st.image('assets/new_logo.svg', width=200)
+            st.image('assets/algo_52g_logo.svg', width=200)
             st.session_state["selected_app_name"] = st.selectbox('app 선택', [app['app_name']
                                                                             for app in st.session_state['app_list']])
             st.session_state["selected_app_id"] = set_app_id_via_selected_app_name()
