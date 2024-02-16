@@ -9,7 +9,7 @@ from services.api_services import get_thread_id_list, get_thread_id, get_chat_hi
 def add_thread():
     thread_info = get_thread_id().json()
     thread_id = thread_info['data']['thread_id']
-    st.session_state["thread_id_list"].append(thread_id)
+    # st.session_state["thread_id_list"].append(thread_id)
 
 
 

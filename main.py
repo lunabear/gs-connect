@@ -37,6 +37,7 @@ def run():
     if st.session_state['is_login']:
         if "thread_id_list" not in st.session_state:
             st.session_state["thread_id_list"] = []
+            add_thread()
             set_thread_id_list_to_session_state()
             for thread_id in st.session_state["thread_id_list"]:
                 if thread_id not in st.session_state:
