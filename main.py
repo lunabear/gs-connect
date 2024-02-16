@@ -75,12 +75,16 @@ def run():
 
         for message in st.session_state[st.session_state['current_thread']]:
             with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+                #f'({st.session_state["selected_app_name"]}) ' + content
+                if message["role"] == "assistant":
+                    st.markdown(f'({message["app_name"]}) {message["content"]}')
+                else:
+                    st.markdown(message["content"])
 
 
         if prompt := st.chat_input(f"{st.session_state['selected_app_name']}에게 물어보세요."):
             st.session_state[st.session_state['current_thread']].append(
-                {"role": "user", "content": prompt})
+                {"role": "user", "content": prompt, "app_name": st.session_state["selected_app_name"]})
             with st.chat_message("user"):
                 st.markdown(prompt)
                 st.session_state["app_id"] = st.session_state['app_map_dict'][st.session_state["selected_app_name"]]
@@ -100,7 +104,9 @@ def run():
                             time.sleep(0.1)
 
                 st.write_stream(fake_streaming(content))
-                st.session_state[st.session_state['current_thread']].append({"role": "assistant", "content": content})
+                st.session_state[st.session_state['current_thread']].append(
+                    {"role": "assistant", "content": content, "app_name": st.session_state["selected_app_name"]}
+                )
 
 
 if __name__ == "__main__":

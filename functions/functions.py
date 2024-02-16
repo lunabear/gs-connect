@@ -32,8 +32,9 @@ def set_chat_history_via_thread_id(thread_id: str) -> None:
     for chat in chat_history['data']['message_list']:
         if chat['message_from'] == "BOT":
             chat['message_from'] = "assistant"
+        pp(chat)
         st.session_state[thread_id].append(
-            {"role": chat['message_from'], "content": chat['messages'][0]['text']}
+            {"role": chat['message_from'], "content": chat['messages'][0]['text'], "app_name": ''}
         )
 
 
