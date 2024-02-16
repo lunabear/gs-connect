@@ -60,8 +60,18 @@ def run():
         with placeholder:
             st.empty()
 
+
         with st.sidebar:
             st.image('assets/algo_52g_logo.svg', width=200)
+            # CSS를 사용하여 selectbox 스타일 변경
+            st.markdown("""
+               <style>
+               div[data-baseweb="popover"] > div {
+                     background-color: gray; 
+                     padding: 1px;
+               }
+               </style>
+            """, unsafe_allow_html=True)
             st.session_state["selected_app_name"] = st.selectbox('app 선택', [app['app_name']
                                                                             for app in st.session_state['app_list']])
             st.session_state["selected_app_id"] = set_app_id_via_selected_app_name()
