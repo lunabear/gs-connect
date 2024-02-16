@@ -31,8 +31,8 @@ def run():
             with cent_co:
                 st.image('assets/algo_52g_logo.svg', width=200)
                 st.title("Login")
-                email = st.text_input('Email', value='bob@gs.co.kr')
-                pw = st.text_input('Password', value='Lunabear910!', type='password')
+                email = st.text_input('Email')
+                pw = st.text_input('Password', type='password')
 
                 with st.form("my_form"):
                     submitted = st.form_submit_button("Submit")
@@ -43,7 +43,6 @@ def run():
     if st.session_state['is_login']:
         if "thread_id_list" not in st.session_state:
             st.session_state["thread_id_list"] = []
-            # add_thread()
             set_thread_id_list_to_session_state()
             for thread_id in st.session_state["thread_id_list"]:
                 if thread_id not in st.session_state:
@@ -108,7 +107,7 @@ def run():
 
 
             with st.chat_message("assistant"):
-                with st.spinner("많이 답답하시지요? 저희가 답변을 만들고 있어요."):
+                with st.spinner("반가워요. 저희가 답변을 만들고 있어요."):
                     response = ask(prompt, st.session_state['current_thread'], st.session_state["app_id"])
                     print(response)
                     content = response['data']['result']
