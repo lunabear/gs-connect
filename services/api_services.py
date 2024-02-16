@@ -42,6 +42,7 @@ def get_thread_id_list():
 def ask(prompt, thread_id, app_id):
     header = {
         'Authorization': st.session_state.token,
+        # 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4ODk2MDE5OCwianRpIjoiZTBhNzkyYWEtN2EwNC00ZDJiLTkyNjMtMDk2MmEzNTMzNGRhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFwcHNtaXRoIiwibmJmIjoxNjg4OTYwMTk4LCJzY29wZSI6IkFETUlOIn0.MncQ5BGfCAo5W0h-pYiD7bNtgphk0bQWNi_KRLDPoo0'
     }
     parameter = {
                     "app_id": app_id,
@@ -51,6 +52,8 @@ def ask(prompt, thread_id, app_id):
 
     url = f'{base_url}/apps/query/'
     data = requests.post(url, headers=header, json=parameter)
+    print(data)
+    pp(data.json())
     return data.json()
 
 
