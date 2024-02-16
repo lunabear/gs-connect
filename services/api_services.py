@@ -19,6 +19,7 @@ def login_with_linkus(email, pwd) -> bool:
     if response.status_code == 200:
         st.session_state['is_login'] = True
         st.session_state['email'] = email
+        # st.session_state.token = f"Bearer {response.json()['data']['jwt_token']}"
         return True
     else:
         st.session_state['is_login'] = False

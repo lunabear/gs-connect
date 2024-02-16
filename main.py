@@ -18,6 +18,9 @@ def run():
         st.session_state["selected_app_name"] = None
         st.session_state["selected_app_id"] = None
 
+    if 'token' not in st.session_state:
+        st.session_state['token'] = ''
+
     placeholder = st.empty()
     if not st.session_state['is_login']:
         with placeholder.container():

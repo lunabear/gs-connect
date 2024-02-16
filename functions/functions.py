@@ -8,7 +8,6 @@ from services.api_services import get_thread_id_list, get_thread_id, get_chat_hi
 
 def add_thread():
     thread_info = get_thread_id().json()
-    pp(thread_info)
     thread_id = thread_info['data']['thread_id']
     st.session_state["thread_id_list"].append(thread_id)
 
@@ -33,7 +32,6 @@ def set_chat_history_via_thread_id(thread_id: str) -> None:
     for chat in chat_history['data']['message_list']:
         if chat['message_from'] == "BOT":
             chat['message_from'] = "assistant"
-        pp(chat)
         st.session_state[thread_id].append(
             {"role": chat['message_from'], "content": chat['messages'][0]['text'], "app_name": chat['app_name']}
         )
